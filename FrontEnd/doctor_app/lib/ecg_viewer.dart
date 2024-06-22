@@ -230,7 +230,6 @@ class _EcgViewerState extends State<EcgViewer> {
           relevantData['data'].map((element) => element.toDouble()).toList();
       final timestamps =
           relevantData['time'].map((element) => element.toString()).toList();
-      print('MR BALLS');
 
       int minLength = voltages.length < timestamps.length
           ? voltages.length
@@ -238,8 +237,7 @@ class _EcgViewerState extends State<EcgViewer> {
 
       List<EcgData> ecgData = [
         for (int i = 0; i < minLength; i++)
-          EcgData(voltages[i] * 4.0 + 1.0,
-              (int.parse(timestamps[i]) - epochTime).toDouble())
+          EcgData(voltages[i] * 4.0 + 1.0, (int.parse(timestamps[i]) - epochTime).toDouble() / 1000.0)
       ];
 
       setState(() {
