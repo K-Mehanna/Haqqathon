@@ -1,6 +1,6 @@
 //بِسْمِ ٱللَّٰهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ
 //وَمَآ أُوتِيتُم مِّنَ ٱلْعِلْمِ إِلَّا قَلِيلًۭا
-
+//ESP Sending to APP side. Graphing data from ECG
 
 #include "MAX30105.h"
 #include "spo2_algorithm.h"
