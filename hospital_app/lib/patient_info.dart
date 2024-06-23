@@ -28,7 +28,8 @@ class PatientData {
       'patientName': name,
       'villageName': villageName,
       'doctorName': doctor,
-      'timestamp': last_checked?.toIso8601String() ?? DateTime.now().toIso8601String(),
+      'timestamp':
+          last_checked?.toIso8601String() ?? DateTime.now().toIso8601String(),
       'age': age,
       'gender': gender.toString().split('.').last,
       'priority': priority.toString().split('.').last,

@@ -1,4 +1,6 @@
+import 'dart:async';
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
@@ -12,9 +14,9 @@ class EcgData {
 }
 
 class EcgViewer extends StatefulWidget {
-  const EcgViewer({super.key, required this.channel});
+  const EcgViewer({super.key, this.channel});
 
-  final WebSocketChannel channel;
+  final WebSocketChannel? channel;
 
   @override
   State<EcgViewer> createState() => _EcgViewerState();
@@ -28,55 +30,73 @@ class _EcgViewerState extends State<EcgViewer> {
   late int startTime;
   bool firstTime = true;
   double xWindow = 5.0;
+  Timer? _timer;
+
+  bool fakeData = false;
 
   @override
   void initState() {
     super.initState();
 
     // 1 second is 5 (large) squares
-    widget.channel.stream.listen((message) {
-      print("We are getting message: $message");
-      final rawData = jsonDecode(message);
-      final relevantData = rawData['ecgdata'] as Map<String, dynamic>;
-      print("Relevant data is ${relevantData['time']}");
-      // final voltages = relevantData['data'] as List<double>;
+    if (!fakeData) {
+      widget.channel!.stream.listen((message) {
+        final rawData = jsonDecode(message);
+        final relevantData = rawData['ecgdata'] as Map<String, dynamic>;
+        // final voltages = relevantData['data'] as List<double>;
 
-      final voltages =
-          relevantData['data'].map((element) => element.toDouble()).toList();
-      final timestamps = relevantData['time']
-          .map((element) => int.parse(element.toString()))
-          .toList();
+        final voltages =
+            relevantData['data'].map((element) => element.toDouble()).toList();
+        final timestamps = relevantData['time']
+            .map((element) => int.parse(element.toString()))
+            .toList();
 
-      if (firstTime) {
-        startTime = timestamps[0];
-        firstTime = false;
-      }
+        if (firstTime) {
+          startTime = timestamps[0];
+          firstTime = false;
+        }
 
-      int minLength = voltages.length < timestamps.length
-          ? voltages.length
-          : timestamps.length;
+        int minLength = voltages.length < timestamps.length
+            ? voltages.length
+            : timestamps.length;
 
-      List<EcgData> ecgData = [
-        for (int i = 0; i < minLength; i++)
-          EcgData(voltages[i] / 1024.0 + 1.0,
-              (timestamps[i] - startTime).toDouble() / 1000000.0)
-      ];
+        List<EcgData> ecgData = [
+          for (int i = 0; i < minLength; i++)
+            EcgData(voltages[i] / 1024.0 + 1.0,
+                (timestamps[i] - startTime).toDouble() / 1000000.0)
+        ];
 
-      for (int i = 0; i < minLength; i++) {
-        print(
-            "Voltage: ${ecgData[i].voltage}, Timestamp: ${ecgData[i].timestamp}");
-      }
+        counter = ecgData.last.timestamp;
 
-      counter = ecgData.last.timestamp;
-
-      setState(() {
-        data.addAll(ecgData);
+        setState(() {
+          data.addAll(ecgData);
+        });
       });
+    } else {
+      _startFakingData();
+    }
+  }
+
+  void _startFakingData() {
+    const duration = Duration(milliseconds: 100); // Update every second
+    _timer = Timer.periodic(duration, (Timer timer) {
+      int step = 1;
+      setState(() {
+        data.addAll(_generateFakeData(step, 1.0, 5.0)); // Generate 10 random double values between 0.0 and 100.0
+      });
+    });
+  }
+
+  List<EcgData> _generateFakeData(int count, double min, double max) {
+    return List.generate(count, (_) {
+      counter += 0.2;
+      return EcgData(3.0 + 1.7 * sin(7 * counter) * sin(0.5 * counter) * cos(3.25 * counter), counter);
     });
   }
 
   @override
   void dispose() {
+    _timer?.cancel();
     super.dispose();
   }
 
@@ -88,7 +108,6 @@ class _EcgViewerState extends State<EcgViewer> {
 
   @override
   Widget build(BuildContext context) {
-    print("ECG Viewer Data size: ${data.length}");
     return Container(
       width: double.infinity,
       height: 300,

@@ -28,16 +28,15 @@ class _DentalNotesPageState extends State<DentalNotesPage> {
     for (var i = 0; i < 4; i++) {
       for (var j = 0; j < 8; j++) {
         setState(() {
-          toothNotes[i][j] = _controllers[i][j].text == ""
-              ? "No notes"
-              : _controllers[i][j].text;
+          toothNotes[i][j] =
+              _controllers[i][j].text == "" ? "" : _controllers[i][j].text;
         });
       }
     }
     Map<String, dynamic> notes = {
       'complaints': _controller.text,
       'generalNotes': _genController.text,
-      'toothNotes': toothNotes,
+      //'toothNotes': toothNotes,
     };
     print('notes: $notes');
     // Navigator.pop(context, _controller.text);

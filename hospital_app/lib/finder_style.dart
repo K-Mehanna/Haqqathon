@@ -1,11 +1,15 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:hospital_app/database_helper.dart';
 import 'package:hospital_app/patient_dashboard.dart';
+import 'package:hospital_app/patient_info.dart';
 import 'package:hospital_app/patient_model.dart';
 import 'package:hospital_app/village_model.dart';
 import 'package:hospital_app/widgets/patients.dart';
 import 'package:hospital_app/widgets/villages.dart';
 import 'package:intl/intl.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 
 class FinderHomePage extends StatefulWidget {
   const FinderHomePage({super.key});
@@ -21,11 +25,29 @@ class _FinderHomePageState extends State<FinderHomePage> {
   late Patient _selectedPatient;
   bool doneFirstCol = false;
   bool doneSecondCol = false;
+  final _channel = WebSocketChannel.connect(
+    //Uri.parse('ws://192.168.4.1:80/ws'),
+    Uri.parse('ws://172.20.10.2:80/ws'),
+  );
+
+  late final Village village;
+  late final Patient patient;
 
   @override
   void initState() {
     super.initState();
     _futureData = _databaseHelper.getVillages();
+
+    _channel.stream.listen((message) {
+      if (message != "null") {
+        print("We are getting message: $message");
+        final rawData = jsonDecode(message) as Map<String, dynamic>;
+        village = Village.fromJson(rawData);
+        patient = Patient.fromJson(rawData);
+        // _databaseHelper.addResidentToVillageByName(patient, village.name);
+        print('Here');
+      }
+    });
   }
 
   @override
@@ -258,12 +280,41 @@ class _FinderHomePageState extends State<FinderHomePage> {
                                         ),
                                       ),
                                       SizedBox(height: 20),
-                                      Text('Dental Notes',
-                                          style: TextStyle(
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.bold)),
                                       Text(
-                                        _selectedPatient.dentalNotes,
+                                        'Priority: ${_selectedPatient.priority}',
+                                        style: TextStyle(
+                                          fontSize: 16.0,
+                                        ),
+                                      ),
+                                      SizedBox(height: 20),
+                                      Text(
+                                        'Dental Notes',
+                                        style: TextStyle(
+                                            fontSize: 24,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      Text(
+                                        'Complaints',
+                                        style: TextStyle(
+                                            fontSize: 24,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      Text(
+                                        _selectedPatient
+                                            .dentalNotes['complaints'],
+                                        style: TextStyle(
+                                          fontSize: 16.0,
+                                        ),
+                                      ),
+                                      Text(
+                                        'General Notes',
+                                        style: TextStyle(
+                                            fontSize: 24,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      Text(
+                                        _selectedPatient
+                                            .dentalNotes['generalNotes'],
                                         style: TextStyle(
                                           fontSize: 16.0,
                                         ),
@@ -296,5 +347,11 @@ class _FinderHomePageState extends State<FinderHomePage> {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _channel.sink.close();
+    super.dispose();
   }
 }

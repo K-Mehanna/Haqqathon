@@ -1,5 +1,8 @@
 // lib/main.dart
 
+import 'dart:js_interop';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:hospital_app/finder_style.dart';
 import 'package:hospital_app/home_screen.dart';
@@ -12,6 +15,8 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  // FirebaseFirestore.instance.useFirestoreEmulator('localhost', 8080);
 
   runApp(MyApp());
 }

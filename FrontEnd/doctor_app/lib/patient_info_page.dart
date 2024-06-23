@@ -4,7 +4,7 @@ import 'package:intl/intl.dart';
 
 class PatientInfoPage extends StatefulWidget {
   const PatientInfoPage({super.key});
-  
+
   @override
   State<PatientInfoPage> createState() => _PatientInfoPageState();
 }
@@ -14,7 +14,7 @@ class _PatientInfoPageState extends State<PatientInfoPage> {
   late String _patientName;
   late String _villageName;
   late String _doctorName;
-  DateTime _timestamp = DateTime.now();
+  final DateTime _timestamp = DateTime.now();
   late int _age;
   Gender _gender = Gender.male;
   Priority _priority = Priority.low;
@@ -32,20 +32,6 @@ class _PatientInfoPageState extends State<PatientInfoPage> {
         priority: _priority,
       );
       Navigator.pop(context, patientInfo);
-    }
-  }
-
-  Future<void> _selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: _timestamp,
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2101),
-    );
-    if (picked != null && picked != _timestamp) {
-      setState(() {
-        _timestamp = picked;
-      });
     }
   }
 
@@ -148,11 +134,6 @@ class _PatientInfoPageState extends State<PatientInfoPage> {
                 onSaved: (value) {
                   _priority = value!;
                 },
-              ),
-              ListTile(
-                title: Text("Date: ${DateFormat('yyyy-MM-dd').format(_timestamp)}"),
-                trailing: Icon(Icons.calendar_today),
-                onTap: () => _selectDate(context),
               ),
               SizedBox(height: 20),
               ElevatedButton(

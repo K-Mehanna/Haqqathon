@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -40,9 +41,9 @@ class _HomePageState extends State<HomePage> {
     fakeData();
   }
 
-  // final _channel = WebSocketChannel.connect(
-  //   Uri.parse('ws://192.168.4.1:8080/ws'),
-  // );
+  final _channel = WebSocketChannel.connect(
+    Uri.parse('ws://192.168.4.1:8090/ws'),
+  );
 
   void fakeData() {
     _timer = Timer.periodic(Duration(seconds: 2), (Timer timer) {
@@ -54,19 +55,31 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  String dentalString(Map<String, dynamic> data) {
-    return 'Complaints: ${data['complaints']}\nGeneral notes: ${data['generalNotes']}';
-  }
-
   Patient createPatient(Map<String, dynamic> data) {
+    print('fdsdafdas: ${data.toString()}');
     return Patient(
       age: data['age'],
-      dentalNotes: data['dental'],
-      doctor: data['doctor'],
+      dentalNotes: data['dentalData'] as Map<String, dynamic>,
+      doctor: data['doctorName'],
       gender: data['gender'],
-      lastVisit: (data['last_checked'] as Timestamp).toDate(),
-      medicalNotes: data['medical'],
+      lastVisit: (data['timestamp'] as Timestamp).toDate(),
+      medicalNotes: data['medicalData'],
       name: data['name'],
+      priority: data['priority'],
+    );
+  }
+
+  Patient createPatient1(PatientData data) {
+    print('fdsdafdas: ${data.toString()}');
+    return Patient(
+      age: data.age!,
+      dentalNotes: data.dental!,
+      doctor: data.doctor!,
+      gender: data.gender.toString().split('.').last,
+      lastVisit: data.last_checked!,
+      medicalNotes: data.medical!,
+      name: data.name!,
+      priority: data.priority.toString().split('.').last,
     );
   }
 
@@ -82,12 +95,15 @@ class _HomePageState extends State<HomePage> {
           backgroundColor: Colors.green,
           foregroundColor: Colors.white,
           onPressed: () {
-            // uncomment out the following line to send the data to the server
-            //_channel.sink.add(jsonEncode(_patientData.toJson()));
             Map<String, dynamic> data = _patientData.toJson();
-            print(data.toString());
-            _databaseHelper.addResidentToVillageByName(
-                createPatient(data), _patientData.villageName!);
+            // uncomment out the following line to send the data to the server
+            _channel.sink.add(jsonEncode(_patientData.toJson()));
+            print('data: ${data.toString()}');
+            //print(createPatient(data));
+            // print('fdsafad: ${createPatient1(_patientData)}');
+
+            // _databaseHelper.addResidentToVillageByName(
+            //     createPatient1(_patientData), _patientData.villageName!);
           },
           icon: Icon(Icons.send),
           label: Text('Send data to the hospital'),
@@ -96,10 +112,11 @@ class _HomePageState extends State<HomePage> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       body: Column(
         children: [
-          const Placeholder(
-            fallbackHeight: 300,
-          ),
-          // EcgViewer(channel: _channel),
+          // const Placeholder(
+          //   fallbackHeight: 300,
+          // ),
+          EcgViewer(channel: _channel),
+          //EcgViewer(),
           const SizedBox(
             height: 20.0,
           ),
@@ -127,10 +144,12 @@ class _HomePageState extends State<HomePage> {
                 foregroundColor: Colors.black,
               ),
               onPressed: () async {
-                _patientData.dentalData = await Navigator.push(
+                var table = await Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => DentalNotesPage()),
                 );
+                print('table: $table');
+                _patientData.dental = table;
               },
               child: Text('Add dental notes')),
 
@@ -141,7 +160,7 @@ class _HomePageState extends State<HomePage> {
                 foregroundColor: Colors.white,
               ),
               onPressed: () async {
-                _patientData.medicalData = await Navigator.push(
+                _patientData.medical = await Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => NotesPage()),
                 );
@@ -171,7 +190,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void dispose() {
     _timer?.cancel();
-    // _channel.sink.close();
+    _channel.sink.close();
     super.dispose();
   }
 }

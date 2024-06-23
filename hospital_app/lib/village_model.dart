@@ -7,6 +7,12 @@ class Village {
     required this.name,
   });
 
+  factory Village.fromJson(Map<String, dynamic> json) {
+    return Village(
+      name: json['villageName'],
+    );
+  }
+
   factory Village.fromFirestore(
     QueryDocumentSnapshot<Map<String, dynamic>> snapshot,
     SnapshotOptions? options,

@@ -53,12 +53,14 @@ class DatabaseHelper {
   Future<void> addResidentToVillageByName(
       Patient patient, String villageName) async {
     try {
+      print('test: ${patient.toFirestore()}');
       // Query the villages collection to find the village with the given name
       QuerySnapshot villageSnapshot = await _db
           .collection('villages')
           .where('name', isEqualTo: villageName)
           .get();
-
+          
+      print("FDSFDAFDA");
       if (villageSnapshot.docs.isEmpty) {
         print('No village found with the name: $villageName');
         return;
