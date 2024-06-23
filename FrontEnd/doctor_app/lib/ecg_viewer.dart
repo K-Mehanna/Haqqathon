@@ -213,7 +213,7 @@ class _EcgViewerState extends State<EcgViewer> {
   double offset = 0.0;
   bool isScrolling = false;
   double scrollSnapshot = 0.0;
-  int epochTime = DateTime.now().microsecondsSinceEpoch;
+  late int epochTime;// = DateTime.now().microsecondsSinceEpoch;
 
   @override
   void initState() {
@@ -235,10 +235,18 @@ class _EcgViewerState extends State<EcgViewer> {
           ? voltages.length
           : timestamps.length;
 
+      epochTime = timestamps[0];
+
       List<EcgData> ecgData = [
         for (int i = 0; i < minLength; i++)
           EcgData(voltages[i] * 4.0 + 1.0, (int.parse(timestamps[i]) - epochTime).toDouble() / 1000.0)
       ];
+
+      
+      for (int i = 0; i < minLength; i++) {
+        print("Voltage: ${ecgData[i].voltage}, Timestamp: ${ecgData[i].timestamp}");
+      }
+
 
       setState(() {
         data.addAll(ecgData);

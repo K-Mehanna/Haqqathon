@@ -17,9 +17,9 @@ class _HomePageState extends State<HomePage> {
   Map<String, dynamic>? _dentalNotes;
   Map<String, dynamic>? _medicalNotes;
 
-  // final _channel = WebSocketChannel.connect(
-  //   Uri.parse('ws://192.168.4.1:8080/ws'),
-  // );
+  final _channel = WebSocketChannel.connect(
+    Uri.parse('ws://192.168.4.1:8080/ws'),
+  );
 
   void _navigateToSubmitPage(BuildContext context, bool isDental) async {
     print('Dental notes: $_dentalNotes');
@@ -73,7 +73,7 @@ class _HomePageState extends State<HomePage> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       body: Column(
         children: [
-          const Placeholder(),
+          // const Placeholder(),
           // SizedBox(
           //   height: 200,
           //   width: double.infinity,
@@ -84,7 +84,7 @@ class _HomePageState extends State<HomePage> {
           //     },
           //   ),
           // ),
-          // EcgViewer(channel: _channel),
+          EcgViewer(channel: _channel),
           const SizedBox(
             height: 20.0,
           ),
@@ -141,7 +141,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void dispose() {
-    // _channel.sink.close();
+    _channel.sink.close();
     super.dispose();
   }
 }
