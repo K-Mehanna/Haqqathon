@@ -33,7 +33,7 @@ class _HomePageState extends State<HomePage> {
   Timer? _timer;
 
   double oxygenLevel = 98.7;
-  int heartRate = 65;
+  int heartRate = 70;
 
   @override
   void initState() {

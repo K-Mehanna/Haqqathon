@@ -42,8 +42,10 @@ class _FinderHomePageState extends State<FinderHomePage> {
       if (message != "null") {
         print("We are getting message: $message");
         final rawData = jsonDecode(message) as Map<String, dynamic>;
-        village = Village.fromJson(rawData);
         patient = Patient.fromJson(rawData);
+        String villageName = rawData['villageName'];
+        print(patient.age);
+        print(villageName);
         // _databaseHelper.addResidentToVillageByName(patient, village.name);
         print('Here');
       }
