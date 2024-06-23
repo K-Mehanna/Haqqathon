@@ -7,11 +7,18 @@
 #include "spo2_algorithm.h"
 #include <SPI.h>
 #include <LoRa.h>
+#include <HardwareSerial.h>
 
-#define ECG_PIN 16  // ECG sensor pin L0 +
-#define ECG_PIN2 17 // ECG sensor pin L0 -
+#define ECG_PIN 4  // ECG sensor pin L0 +
+#define ECG_PIN2 15 // ECG sensor pin L0 -
 
-#define LORA 14
+#define ss 5
+#define rst 14
+#define dio0 2
+// 19, 18, 23
+
+#define RX2 16
+#define TX2 17
 
 const char *ssid = "ESP32-Access-Point";
 const char *password = "123456789";
@@ -25,7 +32,7 @@ JsonArray ecgTimeArray;
 
 JsonDocument doc2;
 
-MAX30105 particleSensor;
+//MAX30105 particleSensor;
 
 #define MAX_BRIGHTNESS 255
 
@@ -42,13 +49,14 @@ void setupJSON();
 void onWebSocketEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventType type, void *arg, uint8_t *data, size_t len);
 void sendWsMessage();
 void readSensors();
+void sendLoraMessage();
 
 void setup() {
   Serial.begin(115200);
+  Serial2.begin(115200, SERIAL_8N1, RX2, TX2);
 
   pinMode(ECG_PIN, INPUT);
   pinMode(ECG_PIN2, INPUT);
-  pinMode(LORA, OUTPUT);
 
   WiFi.softAP(ssid, password);
   IPAddress IP = WiFi.softAPIP();
@@ -63,8 +71,6 @@ void setup() {
 
   setupJSON();
 
-
-
   // Commented out MAX30105 initialization for now
   /*
   Wire.begin(21, 22, 100000L);
@@ -74,7 +80,7 @@ void setup() {
   }
 
   byte ledBrightness = 60;
-  byte sampleAverage = 4;
+  byte sampleAverage = 4
   byte ledMode = 2;
   byte sampleRate = 100;
   int pulseWidth = 411;
@@ -89,7 +95,8 @@ int count = 0;
 void loop() {
   readSensors();
   sendWsMessage();
-
+  sendLoraMessage();
+  
   delay(100); // Send data every second
 }
 
@@ -140,10 +147,10 @@ void sendWsMessage() {
   ws.textAll(json);
 }
 
+int counter = 0;
 void sendLoraMessage() {
   String json;
   serializeJson(doc, json);
-  digitalWrite(LORA, HIGH);
-  Serial.println(json);
-  digitalWrite(LORA, LOW);
+  Serial2.println(json);
+
 }
