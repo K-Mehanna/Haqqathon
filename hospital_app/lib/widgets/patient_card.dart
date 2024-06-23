@@ -1,51 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:hospital_app/database_helper.dart';
 import 'package:hospital_app/patient_detail.dart';
 import 'package:hospital_app/patient_model.dart';
 import 'package:intl/intl.dart';
-
-class DashboardScreen extends StatefulWidget {
-  final String villageName;
-
-  const DashboardScreen({super.key, required this.villageName});
-
-  @override
-  State<DashboardScreen> createState() => _DashboardScreenState();
-}
-
-class _DashboardScreenState extends State<DashboardScreen> {
-  final DatabaseHelper _databaseHelper = DatabaseHelper();
-  late Future<List<Patient>> _futureData;
-
-  @override
-  void initState() {
-    super.initState();
-    _futureData = _databaseHelper.getPatients(widget.villageName);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Medical Dashboard'),
-      ),
-      body: FutureBuilder<List<Patient>>(
-        future: _futureData,
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            return ListView.builder(
-              itemCount: snapshot.data!.length, //patients.length,
-              itemBuilder: (context, index) {
-                return PatientCard(patient: snapshot.data![index]);
-              },
-            );
-          }
-          return CircularProgressIndicator();
-        },
-      ),
-    );
-  }
-}
 
 class PatientCard extends StatelessWidget {
   final Patient patient;

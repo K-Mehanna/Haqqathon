@@ -24,7 +24,6 @@ class Patient {
     SnapshotOptions? options,
   ) {
     final data = snapshot.data();
-    print('GOT TO HERE: $data');
     return Patient(
       age: data['age'],
       dentalNotes: data['dental'],
@@ -42,7 +41,7 @@ class Patient {
       "dental": dentalNotes,
       "doctor": doctor,
       "gender": gender,
-      "last_checked": Timestamp.fromDate(lastVisit)   ,
+      "last_checked": Timestamp.fromDate(lastVisit),
       "medical": medicalNotes,
       "name": name,
     };

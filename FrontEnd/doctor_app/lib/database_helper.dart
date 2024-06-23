@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:hospital_app/patient_model.dart';
-import 'package:hospital_app/village_model.dart';
+import 'package:doctor_app/patient_model.dart';
+import 'package:doctor_app/village_notes.dart';
 
 class DatabaseHelper {
   final FirebaseFirestore _db = FirebaseFirestore.instance;

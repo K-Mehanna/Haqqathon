@@ -10,6 +10,7 @@ class DentalNotesPage extends StatefulWidget {
 
 class _DentalNotesPageState extends State<DentalNotesPage> {
   final TextEditingController _controller = TextEditingController();
+  final TextEditingController _genController = TextEditingController();
 
   final List<List<TextEditingController>> _controllers = List.generate(
     4,
@@ -34,9 +35,11 @@ class _DentalNotesPageState extends State<DentalNotesPage> {
       }
     }
     Map<String, dynamic> notes = {
-      'generalNotes': _controller.text,
+      'complaints': _controller.text,
+      'generalNotes': _genController.text,
       'toothNotes': toothNotes,
     };
+    print('notes: $notes');
     // Navigator.pop(context, _controller.text);
     Navigator.pop(context, notes);
   }
@@ -59,11 +62,23 @@ class _DentalNotesPageState extends State<DentalNotesPage> {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            TextField(
+            const SizedBox(height: 20.0),
+            MyTextField(
               controller: _controller,
-              decoration: const InputDecoration(labelText: 'Enter notes'),
-              keyboardType: TextInputType.multiline,
-              maxLines: null,
+              hintText: "Enter complaints",
+            ),
+            const SizedBox(height: 20.0),
+            const Text(
+              'General notes',
+              style: TextStyle(
+                fontSize: 24.0,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 20.0),
+            MyTextField(
+              controller: _genController,
+              hintText: "Enter notes",
             ),
             const SizedBox(height: 20.0),
             Row(
@@ -106,7 +121,7 @@ class _DentalNotesPageState extends State<DentalNotesPage> {
             //   ),
             // ),
             Container(
-              height: 475.0,
+              height: 325.0,
               child: ListView.builder(
                 padding: const EdgeInsets.only(top: 10.0),
                 itemBuilder: (context, index) {

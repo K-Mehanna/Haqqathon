@@ -19,7 +19,7 @@ class PatientDetailScreen extends StatelessWidget {
           children: [
             Text('Name: ${patient.name}'),
             Text('Age: ${patient.age}'),
-            Text('Date Last Visited: ${patient.dateLastVisited}'),
+            Text('Date Last Visited: ${patient.lastVisit}'),
             Text('Doctor: ${patient.doctor}'),
             SizedBox(height: 20),
             Text('Dental Notes',
